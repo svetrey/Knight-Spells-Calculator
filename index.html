@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Spells Damage & Healing Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 140px;
+        }
+        input {
+            padding: 4px;
+            width: 150px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 6px 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        table {
+            margin-top: 25px;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 700px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* Style for the category divider rows */
+        .category-header {
+            background-color: #eaeaea;
+            font-weight: bold;
+            text-align: center;
+        }
+        .diff {
+            font-size: 0.9em;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        .positive { color: green; }
+        .negative { color: red; }
+        .neutral { color: gray; }
+    </style>
+</head>
+<body>
+
+    <h2>All Spells Damage & Healing Calculator</h2>
+
+    <div class="input-group">
+        <label for="flatBonus">Flat Bonus:</label>
+        <input type="number" id="flatBonus" value="0">
+    </div>
+
+    <div class="input-group">
+        <label for="skill">Skill:</label>
+        <input type="number" id="skill" value="0">
+    </div>
+
+    <div class="input-group">
+        <label for="weaponAttack">Weapon Attack:</label>
+        <input type="number" id="weaponAttack" value="0">
+    </div>
+
+    <div class="input-group">
+        <label for="magicLevel">Magic Level:</label>
+        <input type="number" id="magicLevel" value="0">
+    </div>
+
+    <button onclick="calculateAllSpells()">Calculate All Spells</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Spell Name</th>
+                <th>Min Amount</th>
+                <th>Max Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="3" class="category-header">Healing Spells</td>
+            </tr>
+            <tr>
+                <td>Exura Ico</td>
+                <td><span id="min-exura-ico">0</span><span id="diff-min-exura-ico" class="diff"></span></td>
+                <td><span id="max-exura-ico">0</span><span id="diff-max-exura-ico" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exura Med Ico</td>
+                <td><span id="min-exura-med-ico">0</span><span id="diff-min-exura-med-ico" class="diff"></span></td>
+                <td><span id="max-exura-med-ico">0</span><span id="diff-max-exura-med-ico" class="diff"></span></td>
+            </tr>
+
+            <tr>
+                <td colspan="3" class="category-header">Attack Spells</td>
+            </tr>
+            <tr>
+                <td>Exori Gran</td>
+                <td><span id="min-exori-gran">0</span><span id="diff-min-exori-gran" class="diff"></span></td>
+                <td><span id="max-exori-gran">0</span><span id="diff-max-exori-gran" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori</td>
+                <td><span id="min-exori">0</span><span id="diff-min-exori" class="diff"></span></td>
+                <td><span id="max-exori">0</span><span id="diff-max-exori" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori Mas</td>
+                <td><span id="min-exori-mas">0</span><span id="diff-min-exori-mas" class="diff"></span></td>
+                <td><span id="max-exori-mas">0</span><span id="diff-max-exori-mas" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori Min</td>
+                <td><span id="min-exori-min">0</span><span id="diff-min-exori-min" class="diff"></span></td>
+                <td><span id="max-exori-min">0</span><span id="diff-max-exori-min" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori Ico</td>
+                <td><span id="min-exori-ico">0</span><span id="diff-min-exori-ico" class="diff"></span></td>
+                <td><span id="max-exori-ico">0</span><span id="diff-max-exori-ico" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori Hur</td>
+                <td><span id="min-exori-hur">0</span><span id="diff-min-exori-hur" class="diff"></span></td>
+                <td><span id="max-exori-hur">0</span><span id="diff-max-exori-hur" class="diff"></span></td>
+            </tr>
+            <tr>
+                <td>Exori Gran Ico</td>
+                <td><span id="min-exori-gran-ico">0</span><span id="diff-min-exori-gran-ico" class="diff"></span></td>
+                <td><span id="max-exori-gran-ico">0</span><span id="diff-max-exori-gran-ico" class="diff"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const previousResults = {};
+
+        function calculateAllSpells() {
+            const flatBonus = parseFloat(document.getElementById('flatBonus').value) || 0;
+            const skill = parseFloat(document.getElementById('skill').value) || 0;
+            const weaponAttack = parseFloat(document.getElementById('weaponAttack').value) || 0;
+            const magicLevel = parseFloat(document.getElementById('magicLevel').value) || 0;
+
+            // 1. Healing Spells
+            const exuraIcoMin = Math.round(flatBonus + (magicLevel * 4) + 25);
+            const exuraIcoMax = Math.round(flatBonus + (magicLevel * 7.95) + 51);
+            updateRowValues('exura-ico', exuraIcoMin, exuraIcoMax);
+
+            const exuraMedIcoMin = Math.round(flatBonus + (magicLevel * 15.373) + 93);
+            const exuraMedIcoMax = Math.round(flatBonus + (magicLevel * 21.04) + 134);
+            updateRowValues('exura-med-ico', exuraMedIcoMin, exuraMedIcoMax);
+
+            // 2. Attack Spells
+            const attackSpells = [
+                { id: 'exori-gran', base: 92 },
+                { id: 'exori', base: 44 },
+                { id: 'exori-mas', base: 32 },
+                { id: 'exori-min', base: 72 },
+                { id: 'exori-ico', base: 39 },
+                { id: 'exori-hur', base: 32 },
+                { id: 'exori-gran-ico', base: 125 }
+            ];
+
+            attackSpells.forEach(spell => {
+                const currentMin = Math.round(flatBonus + (0.75 * skill * weaponAttack * (spell.base / 1000)));
+                const currentMax = Math.round(flatBonus + (1.25 * skill * weaponAttack * (spell.base / 1000)));
+                updateRowValues(spell.id, currentMin, currentMax);
+            });
+        }
+
+        function updateRowValues(id, currentMin, currentMax) {
+            document.getElementById(`min-${id}`).textContent = currentMin;
+            document.getElementById(`max-${id}`).textContent = currentMax;
+
+            updateDifferenceIndicator(`diff-min-${id}`, currentMin, previousResults[`min-${id}`]);
+            updateDifferenceIndicator(`diff-max-${id}`, currentMax, previousResults[`max-${id}`]);
+
+            previousResults[`min-${id}`] = currentMin;
+            previousResults[`max-${id}`] = currentMax;
+        }
+
+        function updateDifferenceIndicator(elementId, currentValue, previousValue) {
+            const diffElement = document.getElementById(elementId);
+            
+            if (previousValue === undefined) {
+                diffElement.textContent = "";
+                return;
+            }
+
+            const difference = currentValue - previousValue;
+
+            if (difference > 0) {
+                diffElement.textContent = ` (+${difference})`;
+                diffElement.className = "diff positive";
+            } else if (difference < 0) {
+                diffElement.textContent = ` (${difference})`;
+                diffElement.className = "diff negative";
+            } else {
+                diffElement.textContent = " (+0)";
+                diffElement.className = "diff neutral";
+            }
+        }
+    </script>
+
+</body>
+</html>
